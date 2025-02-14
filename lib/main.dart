@@ -5,12 +5,14 @@ import 'package:url_launcher/url_launcher.dart';
 class ParkingLocation {
   final String name;
   final String coordinates; // Format: "latitude,longitude"
-  final String occupancy;   // Format: "occupied/total", e.g., "4/5"
+  int occupied; // Number of occupied spots
+  final int totalSpots; // Total spots available
 
   ParkingLocation({
     required this.name,
     required this.coordinates,
-    required this.occupancy,
+    required this.occupied,
+    required this.totalSpots,
   });
 }
 
@@ -39,89 +41,119 @@ void main() {
   );
 }
 
-class ParkingApp extends StatelessWidget {
-  // Replace these with your actual location data.
+class ParkingApp extends StatefulWidget {
+  @override
+  _ParkingAppState createState() => _ParkingAppState();
+}
+
+class _ParkingAppState extends State<ParkingApp> {
   final List<ParkingLocation> locations = [
-    ParkingLocation(
-      name: 'AB1 Parking',
-      coordinates: '12.84361,80.15333', // Converted from DMS to decimal degrees.
-      occupancy: '4/5',
-    ),
-    ParkingLocation(
-      name: 'AB2 Parking',
-      coordinates: '12.84389,80.15444',
-      occupancy: '5/5',
-    ),
-    ParkingLocation(
-      name: 'AB3 Parking',
-      coordinates: '12.84278,80.15639',
-      occupancy: '2/5',
-    ),
-    ParkingLocation(
-      name: 'Student Parking 1',
-      coordinates: '12.84139, 80.15306',
-      occupancy: '5/5',
-    ),
-    ParkingLocation(
-      name: 'Student Parking 2',
-      coordinates: '12.84028,80.15500',
-      occupancy: '1/5',
-    ),
-    ParkingLocation(
-      name: 'Student Parking 3',
-      coordinates: '12.84194,80.15194',
-      occupancy: '0/5',
-    ),
-    ParkingLocation(
-      name: 'MG Auditorium Parking',
-      coordinates: '12.84028, 80.15500',
-      occupancy: '0/5',
-    ),
+    ParkingLocation(name: 'AB1 Parking', coordinates: '12.84361,80.15333', occupied: 4, totalSpots: 5),
+    ParkingLocation(name: 'AB2 Parking', coordinates: '12.84389,80.15444', occupied: 5, totalSpots: 5),
+    ParkingLocation(name: 'AB3 Parking', coordinates: '12.84278,80.15639', occupied: 2, totalSpots: 5),
+    ParkingLocation(name: 'Student Parking 1', coordinates: '12.84139,80.15306', occupied: 5, totalSpots: 5),
+    ParkingLocation(name: 'Student Parking 2', coordinates: '12.84028,80.15500', occupied: 1, totalSpots: 5),
+    ParkingLocation(name: 'Student Parking 3', coordinates: '12.84194,80.15194', occupied: 0, totalSpots: 5),
+    ParkingLocation(name: 'MG Auditorium Parking', coordinates: '12.84028,80.15500', occupied: 0, totalSpots: 5),
   ];
 
-  /// Attempts to launch Google Maps using the native scheme first, then falls back to a universal URL.
+  /// Launches Google Maps for navigation.
   Future<void> _launchGoogleMaps(String coordinates) async {
-    // Try the native navigation URI (Android).
-    final Uri nativeUri = Uri.parse('google.navigation:q=$coordinates');
-    if (await canLaunchUrl(nativeUri)) {
-      await launchUrl(nativeUri, mode: LaunchMode.externalApplication);
-      return;
+    final Uri uri = Uri.parse('google.navigation:q=$coordinates');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      final Uri fallbackUri = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$coordinates&travelmode=driving');
+      if (await canLaunchUrl(fallbackUri)) {
+        await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
+      } else {
+        throw 'Could not launch Google Maps';
+      }
     }
-
-    // Fallback to the universal Google Maps URL.
-    final Uri universalUri = Uri.parse(
-      'https://www.google.com/maps/dir/?api=1&destination=$coordinates&travelmode=driving',
-    );
-    if (await canLaunchUrl(universalUri)) {
-      await launchUrl(universalUri, mode: LaunchMode.externalApplication);
-      return;
-    }
-
-    throw 'Could not launch Google Maps for coordinates: $coordinates';
   }
 
-  /// Determines the color based on occupancy.
-  /// Returns redAccent if fully occupied, otherwise greenAccent.
-  Color getOccupancyColor(String occupancy) {
-    try {
-      final parts = occupancy.split('/');
-      final int occupied = int.parse(parts[0]);
-      final int total = int.parse(parts[1]);
-      return occupied == total ? Colors.redAccent : Colors.greenAccent;
-    } catch (e) {
-      // Fallback color in case of parsing error.
-      return Colors.white;
-    }
+  /// Displays a grid dialog for spot availability.
+  void _showAvailabilityDialog(BuildContext context, ParkingLocation location) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.blueGrey[900],
+          title: Text('${location.name} - Parking Spots', style: TextStyle(color: Colors.white)),
+          content: Container(
+            width: double.maxFinite,
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1.2,
+              ),
+              itemCount: location.totalSpots,
+              itemBuilder: (context, index) {
+                bool isOccupied = index < location.occupied;
+                return GestureDetector(
+                  onTap: isOccupied
+                      ? null
+                      : () {
+                          setState(() {
+                            location.occupied++;
+                          });
+                          Navigator.pop(context);
+                          _showSnackbar(context, location);
+                        },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isOccupied ? Colors.redAccent : Colors.greenAccent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        (index + 1).toString(),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Close", style: TextStyle(color: Colors.white70)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Shows a snackbar for navigation confirmation.
+  void _showSnackbar(BuildContext context, ParkingLocation location) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Reserved a spot in ${location.name}. Navigate to parking?"),
+        action: SnackBarAction(
+          label: "Yes",
+          onPressed: () => _launchGoogleMaps(location.coordinates),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Custom color for building names.
     const buildingNameColor = Colors.lightBlueAccent;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'VIT Parking',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -131,6 +163,8 @@ class ParkingApp extends StatelessWidget {
         itemCount: locations.length,
         itemBuilder: (context, index) {
           final location = locations[index];
+          bool isFull = location.occupied == location.totalSpots;
+
           return Card(
             elevation: 4,
             shape: RoundedRectangleBorder(
@@ -144,21 +178,27 @@ class ParkingApp extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: buildingNameColor, // Custom color for building names.
+                  color: buildingNameColor,
                 ),
               ),
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Occupied: ${location.occupancy}',
+                  'Occupied: ${location.occupied}/${location.totalSpots}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: getOccupancyColor(location.occupancy),
+                    color: isFull ? Colors.redAccent : Colors.greenAccent,
                   ),
                 ),
               ),
               trailing: Icon(Icons.navigation, size: 28),
-              onTap: () => _launchGoogleMaps(location.coordinates),
+              onTap: () {
+                if (isFull) {
+                  _launchGoogleMaps(location.coordinates);
+                } else {
+                  _showAvailabilityDialog(context, location);
+                }
+              },
             ),
           );
         },
