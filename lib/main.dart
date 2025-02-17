@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vit_parking/ui/account/email_entry_page.dart';
 
 /// Model class for parking location details.
 class ParkingLocation {
@@ -37,7 +38,7 @@ void main() {
           bodyMedium: TextStyle(color: Colors.black54),
         ),
       ),
-      home: const ParkingApp(),
+      home: const EmailEntryPage(),
     ),
   );
 }
@@ -122,8 +123,8 @@ class _ParkingAppState extends State<ParkingApp> {
         return AlertDialog(
           backgroundColor: Colors.blueGrey[900],
           title: Text('${location.name} - Parking Spots',
-              style: TextStyle(color: Colors.white)),
-          content: Container(
+              style: const TextStyle(color: Colors.white)),
+          content: SizedBox(
             width: double.maxFinite,
             child: GridView.builder(
               shrinkWrap: true,
@@ -154,7 +155,7 @@ class _ParkingAppState extends State<ParkingApp> {
                     child: Center(
                       child: Text(
                         (index + 1).toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -169,7 +170,8 @@ class _ParkingAppState extends State<ParkingApp> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Close", style: TextStyle(color: Colors.white70)),
+              child:
+                  const Text("Close", style: TextStyle(color: Colors.white70)),
             ),
           ],
         );
@@ -242,7 +244,7 @@ class _ParkingAppState extends State<ParkingApp> {
                   ),
                 ),
               ),
-              trailing: Icon(Icons.navigation, size: 28),
+              trailing: const Icon(Icons.navigation, size: 28),
               onTap: () {
                 if (isFull) {
                   _launchGoogleMaps(location.coordinates);
