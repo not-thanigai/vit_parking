@@ -22,20 +22,21 @@ void main() {
     MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.blue[900],
-        scaffoldBackgroundColor: Colors.blueGrey[900],
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.blue[900],
+        brightness: Brightness.light,
+        appBarTheme: const AppBarTheme(
           centerTitle: true,
-          elevation: 4,
+          elevation: 0,
+          backgroundColor: Colors.white,
         ),
-        cardColor: Colors.blueGrey[800],
         textTheme: const TextTheme(
-          titleLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white70),
+          titleLarge: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Arial',
+          ),
+          bodyMedium: TextStyle(color: Colors.black54),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
       home: const EmailEntryPage(),
     ),
@@ -50,45 +51,55 @@ class ParkingApp extends StatefulWidget {
 }
 
 class _ParkingAppState extends State<ParkingApp> {
+  _ParkingAppState();
+
   final List<ParkingLocation> locations = [
     ParkingLocation(
-        name: 'AB1 Parking',
-        coordinates: '12.84361,80.15333',
-        occupied: 4,
-        totalSpots: 5),
+      name: 'AB1 Parking',
+      coordinates:
+          '12.84361,80.15333', // Converted from DMS to decimal degrees.
+      occupied: 4,
+      totalSpots: 5,
+    ),
     ParkingLocation(
-        name: 'AB2 Parking',
-        coordinates: '12.84389,80.15444',
-        occupied: 5,
-        totalSpots: 5),
+      name: 'AB2 Parking',
+      coordinates: '12.84389,80.15444',
+      occupied: 5,
+      totalSpots: 5,
+    ),
     ParkingLocation(
-        name: 'AB3 Parking',
-        coordinates: '12.84278,80.15639',
-        occupied: 2,
-        totalSpots: 5),
+      name: 'AB3 Parking',
+      coordinates: '12.84278,80.15639',
+      occupied: 2,
+      totalSpots: 5,
+    ),
     ParkingLocation(
-        name: 'Student Parking 1',
-        coordinates: '12.84139,80.15306',
-        occupied: 5,
-        totalSpots: 5),
+      name: 'Student Parking',
+      coordinates: '12.84139, 80.15306',
+      occupied: 5,
+      totalSpots: 5,
+    ),
     ParkingLocation(
-        name: 'Student Parking 2',
-        coordinates: '12.84028,80.15500',
-        occupied: 1,
-        totalSpots: 5),
+      name: 'D-block Open Parking',
+      coordinates: '12.84028,80.15500',
+      occupied: 1,
+      totalSpots: 5,
+    ),
     ParkingLocation(
-        name: 'Student Parking 3',
-        coordinates: '12.84194,80.15194',
-        occupied: 0,
-        totalSpots: 5),
+      name: 'D-block Closed Parking',
+      coordinates: '12.84194,80.15194',
+      occupied: 0,
+      totalSpots: 5,
+    ),
     ParkingLocation(
-        name: 'MG Auditorium Parking',
-        coordinates: '12.84028,80.15500',
-        occupied: 0,
-        totalSpots: 5),
+      name: 'MG Auditorium Parking',
+      coordinates: '12.84028, 80.15500',
+      occupied: 0,
+      totalSpots: 5,
+    ),
   ];
 
-  /// Launches Google Maps for navigation.
+  /// Attempts to launch Google Maps using the native scheme first, then falls back to a universal URL.
   Future<void> _launchGoogleMaps(String coordinates) async {
     final Uri uri = Uri.parse('google.navigation:q=$coordinates');
     if (await canLaunchUrl(uri)) {
@@ -187,10 +198,15 @@ class _ParkingAppState extends State<ParkingApp> {
     const buildingNameColor = Colors.lightBlueAccent;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'VIT Parking',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            fontFamily: 'Arial',
+          ),
         ),
       ),
       body: ListView.builder(
@@ -201,7 +217,8 @@ class _ParkingAppState extends State<ParkingApp> {
           bool isFull = location.occupied == location.totalSpots;
 
           return Card(
-            elevation: 4,
+            elevation: 2,
+            color: Colors.grey[100],
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
