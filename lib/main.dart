@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vit_parking/ui/account/email_entry_page.dart';
 
 /// Model class for parking location details.
 class ParkingLocation {
@@ -36,25 +37,55 @@ void main() {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      home: ParkingApp(),
+      home: const EmailEntryPage(),
     ),
   );
 }
 
 class ParkingApp extends StatefulWidget {
+  const ParkingApp({super.key});
+
   @override
   _ParkingAppState createState() => _ParkingAppState();
 }
 
 class _ParkingAppState extends State<ParkingApp> {
   final List<ParkingLocation> locations = [
-    ParkingLocation(name: 'AB1 Parking', coordinates: '12.84361,80.15333', occupied: 4, totalSpots: 5),
-    ParkingLocation(name: 'AB2 Parking', coordinates: '12.84389,80.15444', occupied: 5, totalSpots: 5),
-    ParkingLocation(name: 'AB3 Parking', coordinates: '12.84278,80.15639', occupied: 2, totalSpots: 5),
-    ParkingLocation(name: 'Student Parking 1', coordinates: '12.84139,80.15306', occupied: 5, totalSpots: 5),
-    ParkingLocation(name: 'Student Parking 2', coordinates: '12.84028,80.15500', occupied: 1, totalSpots: 5),
-    ParkingLocation(name: 'Student Parking 3', coordinates: '12.84194,80.15194', occupied: 0, totalSpots: 5),
-    ParkingLocation(name: 'MG Auditorium Parking', coordinates: '12.84028,80.15500', occupied: 0, totalSpots: 5),
+    ParkingLocation(
+        name: 'AB1 Parking',
+        coordinates: '12.84361,80.15333',
+        occupied: 4,
+        totalSpots: 5),
+    ParkingLocation(
+        name: 'AB2 Parking',
+        coordinates: '12.84389,80.15444',
+        occupied: 5,
+        totalSpots: 5),
+    ParkingLocation(
+        name: 'AB3 Parking',
+        coordinates: '12.84278,80.15639',
+        occupied: 2,
+        totalSpots: 5),
+    ParkingLocation(
+        name: 'Student Parking 1',
+        coordinates: '12.84139,80.15306',
+        occupied: 5,
+        totalSpots: 5),
+    ParkingLocation(
+        name: 'Student Parking 2',
+        coordinates: '12.84028,80.15500',
+        occupied: 1,
+        totalSpots: 5),
+    ParkingLocation(
+        name: 'Student Parking 3',
+        coordinates: '12.84194,80.15194',
+        occupied: 0,
+        totalSpots: 5),
+    ParkingLocation(
+        name: 'MG Auditorium Parking',
+        coordinates: '12.84028,80.15500',
+        occupied: 0,
+        totalSpots: 5),
   ];
 
   /// Launches Google Maps for navigation.
@@ -63,7 +94,8 @@ class _ParkingAppState extends State<ParkingApp> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      final Uri fallbackUri = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$coordinates&travelmode=driving');
+      final Uri fallbackUri = Uri.parse(
+          'https://www.google.com/maps/dir/?api=1&destination=$coordinates&travelmode=driving');
       if (await canLaunchUrl(fallbackUri)) {
         await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
       } else {
@@ -79,8 +111,9 @@ class _ParkingAppState extends State<ParkingApp> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.blueGrey[900],
-          title: Text('${location.name} - Parking Spots', style: TextStyle(color: Colors.white)),
-          content: Container(
+          title: Text('${location.name} - Parking Spots',
+              style: const TextStyle(color: Colors.white)),
+          content: SizedBox(
             width: double.maxFinite,
             child: GridView.builder(
               shrinkWrap: true,
@@ -111,7 +144,7 @@ class _ParkingAppState extends State<ParkingApp> {
                     child: Center(
                       child: Text(
                         (index + 1).toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -126,7 +159,8 @@ class _ParkingAppState extends State<ParkingApp> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Close", style: TextStyle(color: Colors.white70)),
+              child:
+                  const Text("Close", style: TextStyle(color: Colors.white70)),
             ),
           ],
         );
@@ -138,7 +172,8 @@ class _ParkingAppState extends State<ParkingApp> {
   void _showSnackbar(BuildContext context, ParkingLocation location) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("Reserved a spot in ${location.name}. Navigate to parking?"),
+        content:
+            Text("Reserved a spot in ${location.name}. Navigate to parking?"),
         action: SnackBarAction(
           label: "Yes",
           onPressed: () => _launchGoogleMaps(location.coordinates),
@@ -172,7 +207,8 @@ class _ParkingAppState extends State<ParkingApp> {
             ),
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               title: Text(
                 location.name,
                 style: const TextStyle(
@@ -191,7 +227,7 @@ class _ParkingAppState extends State<ParkingApp> {
                   ),
                 ),
               ),
-              trailing: Icon(Icons.navigation, size: 28),
+              trailing: const Icon(Icons.navigation, size: 28),
               onTap: () {
                 if (isFull) {
                   _launchGoogleMaps(location.coordinates);
