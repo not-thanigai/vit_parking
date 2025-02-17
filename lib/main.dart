@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ParkingLocation {
   final String name;
   final String coordinates; // Format: "latitude,longitude"
-  final String occupancy;   // Format: "occupied/total", e.g., "4/5"
+  final String occupancy; // Format: "occupied/total", e.g., "4/5"
 
   ParkingLocation({
     required this.name,
@@ -19,20 +19,21 @@ void main() {
     MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.blue[900],
-        scaffoldBackgroundColor: Colors.blueGrey[900],
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.blue[900],
+        brightness: Brightness.light,
+        appBarTheme: const AppBarTheme(
           centerTitle: true,
-          elevation: 4,
+          elevation: 0,
+          backgroundColor: Colors.white,
         ),
-        cardColor: Colors.blueGrey[800],
         textTheme: const TextTheme(
-          titleLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white70),
+          titleLarge: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Arial',
+          ),
+          bodyMedium: TextStyle(color: Colors.black54),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
       home: ParkingApp(),
     ),
@@ -44,7 +45,8 @@ class ParkingApp extends StatelessWidget {
   final List<ParkingLocation> locations = [
     ParkingLocation(
       name: 'AB1 Parking',
-      coordinates: '12.84361,80.15333', // Converted from DMS to decimal degrees.
+      coordinates:
+          '12.84361,80.15333', // Converted from DMS to decimal degrees.
       occupancy: '4/5',
     ),
     ParkingLocation(
@@ -58,17 +60,17 @@ class ParkingApp extends StatelessWidget {
       occupancy: '2/5',
     ),
     ParkingLocation(
-      name: 'Student Parking 1',
+      name: 'Student Parking',
       coordinates: '12.84139, 80.15306',
       occupancy: '5/5',
     ),
     ParkingLocation(
-      name: 'Student Parking 2',
+      name: 'D-block Open Parking',
       coordinates: '12.84028,80.15500',
       occupancy: '1/5',
     ),
     ParkingLocation(
-      name: 'Student Parking 3',
+      name: 'D-block Closed Parking',
       coordinates: '12.84194,80.15194',
       occupancy: '0/5',
     ),
@@ -78,6 +80,8 @@ class ParkingApp extends StatelessWidget {
       occupancy: '0/5',
     ),
   ];
+
+  ParkingApp({super.key});
 
   /// Attempts to launch Google Maps using the native scheme first, then falls back to a universal URL.
   Future<void> _launchGoogleMaps(String coordinates) async {
@@ -115,15 +119,18 @@ class ParkingApp extends StatelessWidget {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    // Custom color for building names.
-    const buildingNameColor = Colors.lightBlueAccent;
-
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'VIT Parking',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            fontFamily: 'Arial',
+          ),
         ),
       ),
       body: ListView.builder(
@@ -132,19 +139,20 @@ class ParkingApp extends StatelessWidget {
         itemBuilder: (context, index) {
           final location = locations[index];
           return Card(
-            elevation: 4,
+            elevation: 2,
+            color: Colors.grey[100],
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               title: Text(
                 location.name,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: buildingNameColor, // Custom color for building names.
                 ),
               ),
               subtitle: Padding(
@@ -157,7 +165,8 @@ class ParkingApp extends StatelessWidget {
                   ),
                 ),
               ),
-              trailing: Icon(Icons.navigation, size: 28),
+              trailing: const Icon(Icons.navigation,
+                  size: 28, color: Colors.blueAccent),
               onTap: () => _launchGoogleMaps(location.coordinates),
             ),
           );
