@@ -37,6 +37,8 @@ class ParkingApp extends StatefulWidget {
 class _ParkingAppState extends State<ParkingApp> {
   _ParkingAppState();
 
+  Color fillFaint = const Color.fromRGBO(0, 0, 0, 0.04);
+
   final List<ParkingLocation> locations = [
     ParkingLocation(
       name: 'AB1 Parking',
@@ -179,66 +181,57 @@ class _ParkingAppState extends State<ParkingApp> {
 
   @override
   Widget build(BuildContext context) {
-    const buildingNameColor = Colors.lightBlueAccent;
-
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'VIT Parking',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-            fontFamily: 'Arial',
-          ),
+          style: themeData.textTheme.headlineSmall,
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(10.0),
-        itemCount: locations.length,
-        itemBuilder: (context, index) {
-          final location = locations[index];
-          bool isFull = location.occupied == location.totalSpots;
+      body: SafeArea(
+        bottom: false,
+        child: ListView.builder(
+          padding: const EdgeInsets.all(10.0),
+          itemCount: locations.length,
+          itemBuilder: (context, index) {
+            final location = locations[index];
+            bool isFull = location.occupied == location.totalSpots;
 
-          return Card(
-            elevation: 2,
-            color: Colors.grey[100],
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              title: Text(
-                location.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: buildingNameColor,
-                ),
+            return Card(
+              elevation: 2,
+              color: Colors.grey[100],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  'Occupied: ${location.occupied}/${location.totalSpots}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isFull ? Colors.redAccent : Colors.greenAccent,
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+              child: ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                title: Text(
+                  location.name,
+                  style: themeData.textTheme.bodyLarge,
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    'Occupied: ${location.occupied}/${location.totalSpots}',
+                    style: TextStyle(
+                      color: isFull ? Colors.redAccent : Colors.greenAccent,
+                    ),
                   ),
                 ),
+                trailing: const Icon(Icons.navigation, size: 28),
+                onTap: () {
+                  if (isFull) {
+                    _launchGoogleMaps(location.coordinates);
+                  } else {
+                    _showAvailabilityDialog(context, location);
+                  }
+                },
               ),
-              trailing: const Icon(Icons.navigation, size: 28),
-              onTap: () {
-                if (isFull) {
-                  _launchGoogleMaps(location.coordinates);
-                } else {
-                  _showAvailabilityDialog(context, location);
-                }
-              },
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

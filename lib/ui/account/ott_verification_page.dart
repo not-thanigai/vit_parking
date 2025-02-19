@@ -80,10 +80,11 @@ class _OTTVerificationPageState extends State<OTTVerificationPage> {
           //     isResettingPasswordScreen: widget.isResetPasswordScreen,
           //   );
           // }
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => const ParkingApp(),
             ),
+            (Route<dynamic> route) => false,
           );
           FocusScope.of(context).unfocus();
         },
