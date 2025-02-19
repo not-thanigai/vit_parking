@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vit_parking/theme.dart';
 import 'package:vit_parking/ui/account/email_entry_page.dart';
 
-/// Model class for parking location details.
 class ParkingLocation {
   final String name;
   final String coordinates; // Format: "latitude,longitude"
@@ -21,23 +21,7 @@ void main() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
-        ),
-        textTheme: const TextTheme(
-          titleLarge: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Arial',
-          ),
-          bodyMedium: TextStyle(color: Colors.black54),
-        ),
-      ),
+      theme: themeData,
       home: const EmailEntryPage(),
     ),
   );
@@ -52,6 +36,8 @@ class ParkingApp extends StatefulWidget {
 
 class _ParkingAppState extends State<ParkingApp> {
   _ParkingAppState();
+
+  Color fillFaint = const Color.fromRGBO(0, 0, 0, 0.04);
 
   final List<ParkingLocation> locations = [
     ParkingLocation(
@@ -195,66 +181,57 @@ class _ParkingAppState extends State<ParkingApp> {
 
   @override
   Widget build(BuildContext context) {
-    const buildingNameColor = Colors.lightBlueAccent;
-
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'VIT Parking',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-            fontFamily: 'Arial',
-          ),
+          style: themeData.textTheme.headlineSmall,
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(10.0),
-        itemCount: locations.length,
-        itemBuilder: (context, index) {
-          final location = locations[index];
-          bool isFull = location.occupied == location.totalSpots;
+      body: SafeArea(
+        bottom: false,
+        child: ListView.builder(
+          padding: const EdgeInsets.all(10.0),
+          itemCount: locations.length,
+          itemBuilder: (context, index) {
+            final location = locations[index];
+            bool isFull = location.occupied == location.totalSpots;
 
-          return Card(
-            elevation: 2,
-            color: Colors.grey[100],
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              title: Text(
-                location.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: buildingNameColor,
-                ),
+            return Card(
+              elevation: 2,
+              color: Colors.grey[100],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  'Occupied: ${location.occupied}/${location.totalSpots}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isFull ? Colors.redAccent : Colors.greenAccent,
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+              child: ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                title: Text(
+                  location.name,
+                  style: themeData.textTheme.bodyLarge,
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    'Occupied: ${location.occupied}/${location.totalSpots}',
+                    style: TextStyle(
+                      color: isFull ? Colors.redAccent : Colors.greenAccent,
+                    ),
                   ),
                 ),
+                trailing: const Icon(Icons.navigation, size: 28),
+                onTap: () {
+                  if (isFull) {
+                    _launchGoogleMaps(location.coordinates);
+                  } else {
+                    _showAvailabilityDialog(context, location);
+                  }
+                },
               ),
-              trailing: const Icon(Icons.navigation, size: 28),
-              onTap: () {
-                if (isFull) {
-                  _launchGoogleMaps(location.coordinates);
-                } else {
-                  _showAvailabilityDialog(context, location);
-                }
-              },
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
