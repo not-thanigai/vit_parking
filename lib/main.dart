@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vit_parking/theme.dart';
 import 'package:vit_parking/ui/account/email_entry_page.dart';
 
-/// Model class for parking location details.
 class ParkingLocation {
   final String name;
   final String coordinates; // Format: "latitude,longitude"
@@ -21,23 +21,7 @@ void main() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
-        ),
-        textTheme: const TextTheme(
-          titleLarge: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Arial',
-          ),
-          bodyMedium: TextStyle(color: Colors.black54),
-        ),
-      ),
+      theme: themeData,
       home: const EmailEntryPage(),
     ),
   );

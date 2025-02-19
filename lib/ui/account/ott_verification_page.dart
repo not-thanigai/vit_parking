@@ -24,6 +24,7 @@ class OTTVerificationPage extends StatefulWidget {
 
 class _OTTVerificationPageState extends State<OTTVerificationPage> {
   final _verificationCodeController = TextEditingController();
+  Color fillFaint = const Color.fromRGBO(0, 0, 0, 0.04);
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +171,7 @@ class _OTTVerificationPageState extends State<OTTVerificationPage> {
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  fillColor: const Color.fromRGBO(255, 255, 255, 0.12),
+                  fillColor: fillFaint,
                 ),
                 controller: _verificationCodeController,
                 autofocus: false,

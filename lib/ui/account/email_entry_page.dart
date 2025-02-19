@@ -1,8 +1,6 @@
-// import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
-import 'package:vit_parking/main.dart';
 import 'package:vit_parking/ui/account/ott_verification_page.dart';
 import 'package:vit_parking/ui/components/dynamic_fab.dart';
 
@@ -17,7 +15,7 @@ class _EmailEntryPageState extends State<EmailEntryPage> {
   final _passwordController1 = TextEditingController();
   final _passwordController2 = TextEditingController();
 
-  bool _emailIsValid = false;
+  final bool _emailIsValid = false;
   bool _password1Visible = false;
   bool _password2Visible = false;
   bool _password1InFocus = false;
@@ -32,9 +30,9 @@ class _EmailEntryPageState extends State<EmailEntryPage> {
   final _password1FocusNode = FocusNode();
   final _password2FocusNode = FocusNode();
 
-  final Color _validFieldValueColor = const Color.fromARGB(51, 157, 45, 194);
-  final Color _checkIconColor =
-      const Color.fromRGBO(45, 194, 98, 1.0); // Add this line
+  final Color _validFieldValueColor = const Color.fromRGBO(45, 194, 98, 0.2);
+  final Color _checkIconColor = const Color.fromRGBO(45, 194, 98, 1.0);
+  Color fillFaint = const Color.fromRGBO(0, 0, 0, 0.04);
 
   @override
   void initState() {
@@ -49,6 +47,15 @@ class _EmailEntryPageState extends State<EmailEntryPage> {
       });
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _password1FocusNode.dispose();
+    _password2FocusNode.dispose();
+    _passwordController1.dispose();
+    _passwordController2.dispose();
+    super.dispose();
   }
 
   @override
@@ -94,7 +101,7 @@ class _EmailEntryPageState extends State<EmailEntryPage> {
         onPressedFunction: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => OTTVerificationPage(),
+              builder: (context) => const OTTVerificationPage(),
             ),
           );
           FocusScope.of(context).unfocus();
@@ -126,7 +133,8 @@ class _EmailEntryPageState extends State<EmailEntryPage> {
                     style: Theme.of(context).textTheme.titleMedium,
                     autofillHints: const [AutofillHints.email],
                     decoration: InputDecoration(
-                      fillColor: _emailIsValid ? _validFieldValueColor : null,
+                      fillColor:
+                          _emailIsValid ? _validFieldValueColor : fillFaint,
                       filled: true,
                       hintText: "Email",
                       contentPadding: const EdgeInsets.symmetric(
@@ -177,7 +185,7 @@ class _EmailEntryPageState extends State<EmailEntryPage> {
                     autofillHints: const [AutofillHints.newPassword],
                     decoration: InputDecoration(
                       fillColor:
-                          _passwordIsValid ? _validFieldValueColor : null,
+                          _passwordIsValid ? _validFieldValueColor : fillFaint,
                       filled: true,
                       hintText: "Password",
                       contentPadding: const EdgeInsets.symmetric(
@@ -239,7 +247,7 @@ class _EmailEntryPageState extends State<EmailEntryPage> {
                     decoration: InputDecoration(
                       fillColor: _passwordsMatch && _passwordIsValid
                           ? _validFieldValueColor
-                          : null,
+                          : fillFaint,
                       filled: true,
                       hintText: "Confirm Password",
                       contentPadding: const EdgeInsets.symmetric(
